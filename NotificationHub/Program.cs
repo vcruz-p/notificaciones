@@ -16,10 +16,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowVueClient", policy =>
     {
-        policy.WithOrigins("*") // En producción, especifica los dominios permitidos
+        policy.SetIsOriginAllowed(_ => true) // Permitir cualquier origen
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowAnyMethod();
+              // No usar AllowCredentials() con origen comodín
     });
 });
 
