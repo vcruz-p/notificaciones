@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.SignalR;
 using NotificationHub.Data;
 using NotificationHub.Hubs;
 using NotificationHub.Models;
-using HubsNotificationHub = NotificationHub.Hubs.NotificationHub;
 
 namespace NotificationHub.Services;
 
@@ -14,10 +13,10 @@ public interface INotificationService
 
 public class NotificationService : INotificationService
 {
-    private readonly IHubContext<HubsNotificationHub> _hubContext;
+    private readonly IHubContext<NotificationHubClass> _hubContext;
     private readonly INotificationRepository _repository;
 
-    public NotificationService(IHubContext<HubsNotificationHub> hubContext, INotificationRepository repository)
+    public NotificationService(IHubContext<NotificationHubClass> hubContext, INotificationRepository repository)
     {
         _hubContext = hubContext;
         _repository = repository;

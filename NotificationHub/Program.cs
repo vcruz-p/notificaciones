@@ -4,13 +4,7 @@ using NotificationHub.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar conexión a MySQL
-builder.Services.AddMySql<NotificationRepository>(
-    builder.Configuration.GetConnectionString("DefaultConnection"),
-    new MySqlServerVersion(new Version(8, 4, 11))
-);
-
-// Registrar servicios
+// Configurar conexión a MySQL - Registrar el repositorio como singleton
 builder.Services.AddSingleton<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
@@ -35,7 +29,7 @@ var app = builder.Build();
 app.UseCors("AllowVueClient");
 
 // Mapear el Hub de SignalR
-app.MapHub<NotificationHub>("/notifications");
+app.MapHub<NotificationHubClass>("/notifications");
 
 // Endpoint para obtener notificaciones pendientes
 app.MapGet("/api/notifications/{username}", async (string username, INotificationService service) =>

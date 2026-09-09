@@ -3,7 +3,7 @@ using NotificationHub.Models;
 
 namespace NotificationHub.Hubs;
 
-public class NotificationHub : Hub
+public class NotificationHubClass : Hub
 {
     public override async Task OnConnectedAsync()
     {
