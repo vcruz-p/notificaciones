@@ -11,6 +11,9 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 // Agregar SignalR
 builder.Services.AddSignalR();
 
+// Registrar el worker service para enviar notificaciones pendientes
+builder.Services.AddHostedService<NotificationWorkerService>();
+
 // Configurar CORS para permitir conexiones desde el cliente Vue
 builder.Services.AddCors(options =>
 {
