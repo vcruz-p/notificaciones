@@ -1,32 +1,42 @@
 ```
-# Build results
-obj/
+# Build artifacts
 bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.nupkg
+*.snupkg
 
-# User-specific files
-.vs/
-.userprefs
+# Dependencies
+packages/
+node_modules/
 
-# Environment specific settings
+# Logs
+*.log
+
+# Environment
 .env
 .env.local
 *.env.*
 
-# IDE
+# Editors
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS generated files
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
+# Test and coverage
+coverage/
+htmlcov/
+*.coverage
+.testcoverage
 
-# NuGet packages
-packages/
-*.nupkg
-
-# Project specific
-NotificationHub/obj/
+# Temporary files
+*.tmp
+*.temp
 ```
