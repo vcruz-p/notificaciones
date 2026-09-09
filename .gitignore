@@ -1,33 +1,44 @@
-# Build artifacts
-bin/
-obj/
-*.dll
-*.exe
-*.pdb
-*.config
+```
+# IDE and editor files
+.vscode/
 
-# Dependencies
-packages/
-node_modules/
-
-# Logs
-*.log
-
-# Environment
+# Environment files
 .env
 .env.local
 *.env.*
 
-# Editors
-.vscode/
-.idea/
-*.userprefs
-*.user
+# Logs
+*.log
 
-# OS generated files
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/modules/
 .DS_Store
-Thumbs.db
-desktop.ini
-
-# Testing
-TestResults/
+.hg/
+.svn/
+.well-known/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.idea/
+.vs/
+```
