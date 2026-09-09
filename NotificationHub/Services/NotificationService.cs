@@ -50,3 +50,123 @@ public class NotificationService : INotificationService
         }).ToList();
     }
 }
+
+public class NotificationWorkerService : BackgroundService
+{
+    private readonly ILogger<NotificationWorkerService> _logger;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(30);
+
+    public NotificationWorkerService(ILogger<NotificationWorkerService> logger, IServiceProvider serviceProvider)
+    {
+        _logger = logger;
+        _serviceProvider = serviceProvider;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Notification Worker Service iniciado.");
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var repository = scope.ServiceProvider.GetRequiredService<INotificationRepository>();
+                    var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<NotificationHubClass>>();
+
+                    // Enviar notificaciones con estado 0 (no atendidas)
+                    await SendUnsentNotificationsByEstadoAsync(repository, hubContext, stoppingToken);
+
+                    // Enviar notificaciones del usuario 'system' a todos los usuarios
+                    await SendSystemNotificationsToAllUsersAsync(repository, hubContext, stoppingToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error en Notification Worker Service");
+            }
+
+            await Task.Delay(_pollingInterval, stoppingToken);
+        }
+
+        _logger.LogInformation("Notification Worker Service detenido.");
+    }
+
+    private async Task SendUnsentNotificationsByEstadoAsync(
+        INotificationRepository repository, 
+        IHubContext<NotificationHubClass> hubContext,
+        CancellationToken stoppingToken)
+    {
+        var notifications = await repository.GetUnsentNotificationsByEstadoAsync();
+
+        foreach (var notification in notifications)
+        {
+            if (stoppingToken.IsCancellationRequested)
+                break;
+
+            if (!string.IsNullOrEmpty(notification.Usuario))
+            {
+                var notificationDto = new NotificationDto
+                {
+                    Id = notification.Id,
+                    ClaveId = notification.ClaveId,
+                    SolicitudId = notification.SolicitudId,
+                    NombreProceso = notification.NombreProceso,
+                    Titulo = notification.Titulo,
+                    Mensaje = notification.Mensaje,
+                    NotificationTipo = notification.NotificationTipo,
+                    IsAcknowledged = notification.IsAcknowledged,
+                    RelativeNotifiedDateAndTime = notification.RelativeNotifiedDateAndTime,
+                    CreatedOnUtc = notification.CreatedOnUtc,
+                    Estado = notification.Estado,
+                    Usuario = notification.Usuario,
+                    Prioridad = notification.Prioridad
+                };
+
+                await hubContext.Clients.Group($"User_{notification.Usuario}")
+                    .SendAsync("ClientReceiveNotification", notificationDto, stoppingToken);
+
+                _logger.LogInformation($"Notificación {notification.Id} enviada al usuario {notification.Usuario}");
+            }
+        }
+    }
+
+    private async Task SendSystemNotificationsToAllUsersAsync(
+        INotificationRepository repository, 
+        IHubContext<NotificationHubClass> hubContext,
+        CancellationToken stoppingToken)
+    {
+        var systemNotifications = await repository.GetSystemNotificationsAsync();
+
+        foreach (var notification in systemNotifications)
+        {
+            if (stoppingToken.IsCancellationRequested)
+                break;
+
+            var notificationDto = new NotificationDto
+            {
+                Id = notification.Id,
+                ClaveId = notification.ClaveId,
+                SolicitudId = notification.SolicitudId,
+                NombreProceso = notification.NombreProceso,
+                Titulo = notification.Titulo,
+                Mensaje = notification.Mensaje,
+                NotificationTipo = notification.NotificationTipo,
+                IsAcknowledged = notification.IsAcknowledged,
+                RelativeNotifiedDateAndTime = notification.RelativeNotifiedDateAndTime,
+                CreatedOnUtc = notification.CreatedOnUtc,
+                Estado = notification.Estado,
+                Usuario = notification.Usuario,
+                Prioridad = notification.Prioridad
+            };
+
+            // Enviar a todos los clientes conectados
+            await hubContext.Clients.All
+                .SendAsync("ClientReceiveNotification", notificationDto, stoppingToken);
+
+            _logger.LogInformation($"Notificación system {notification.Id} enviada a todos los usuarios");
+        }
+    }
+}
