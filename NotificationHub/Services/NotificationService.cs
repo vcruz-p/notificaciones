@@ -125,10 +125,14 @@ public class NotificationWorkerService : BackgroundService
                     Prioridad = notification.Prioridad
                 };
 
+                // Enviar solo al usuario específico, no a todos
                 await hubContext.Clients.Group($"User_{notification.Usuario}")
                     .SendAsync("ClientReceiveNotification", notificationDto, stoppingToken);
 
                 _logger.LogInformation($"Notificación {notification.Id} enviada al usuario {notification.Usuario}");
+
+                // Marcar la notificación como enviada para que no se vuelva a enviar
+                await repository.MarkNotificationAsSentAsync(notification.Id);
             }
         }
     }
@@ -167,6 +171,9 @@ public class NotificationWorkerService : BackgroundService
                 .SendAsync("ClientReceiveNotification", notificationDto, stoppingToken);
 
             _logger.LogInformation($"Notificación system {notification.Id} enviada a todos los usuarios");
+
+            // Marcar la notificación como enviada para que no se vuelva a enviar
+            await repository.MarkNotificationAsSentAsync(notification.Id);
         }
     }
 }

@@ -9,6 +9,7 @@ public interface INotificationRepository
     Task MarkAsAcknowledgedAsync(int notificationId);
     Task<List<Notification>> GetUnsentNotificationsByEstadoAsync();
     Task<List<Notification>> GetSystemNotificationsAsync();
+    Task MarkNotificationAsSentAsync(int notificationId);
 }
 
 public class NotificationRepository : INotificationRepository
@@ -153,6 +154,20 @@ public class NotificationRepository : INotificationRepository
         await connection.OpenAsync();
         
         var sql = "UPDATE notifications SET IsAcknowledged = 1 WHERE Id = @Id";
+        
+        await using var cmd = new MySqlCommand(sql, connection);
+        cmd.Parameters.AddWithValue("@Id", notificationId);
+        
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task MarkNotificationAsSentAsync(int notificationId)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        
+        // Actualizar el estado a 1 (enviado/atendido) para que no se vuelva a enviar
+        var sql = "UPDATE notifications SET Estado = 1 WHERE Id = @Id";
         
         await using var cmd = new MySqlCommand(sql, connection);
         cmd.Parameters.AddWithValue("@Id", notificationId);
