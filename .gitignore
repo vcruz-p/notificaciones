@@ -1,44 +1,49 @@
 ```
-# IDE and editor files
-.vscode/
+# Build artifacts
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.so
+*.dylib
+*.jar
+*.war
+*.class
+*.o
+*.obj
+*.out
 
-# Environment files
-.env
-.env.local
-*.env.*
+# Dependencies
+node_modules/
+packages/
+vendor/
 
 # Logs
 *.log
 
-# Python specific
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.git/modules/
+# Environment specific
+.env
+.env.local
+*.env.*
+
+# OS generated
 .DS_Store
-.hg/
-.svn/
-.well-known/
+Thumbs.db
+
+# IDE specific
+.vscode/
+.idea/
 *.swp
 *.swo
-*~
-.project
-.pydevproject
-.idea/
-.vs/
+
+# Coverage reports
+coverage/
+htmlcov/
+*.coverage
+
+# Distribution / packaging
+dist/
+build/
+target/
 ```
