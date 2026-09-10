@@ -8,8 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
-// Agregar SignalR
-builder.Services.AddSignalR();
+// Agregar SignalR y registrar el Hub para poder inyectar dependencias
+builder.Services.AddSignalR().AddHubOptions<NotificationHubClass>(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 // Registrar el worker service para enviar notificaciones pendientes
 builder.Services.AddHostedService<NotificationWorkerService>();
