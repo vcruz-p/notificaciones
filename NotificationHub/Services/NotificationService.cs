@@ -76,11 +76,8 @@ public class NotificationWorkerService : BackgroundService
                     var repository = scope.ServiceProvider.GetRequiredService<INotificationRepository>();
                     var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<NotificationHubClass>>();
 
-                    // Enviar notificaciones con estado 0 (no atendidas)
+                    // Enviar notificaciones con estado 0 (no atendidas) solo a usuarios específicos
                     await SendUnsentNotificationsByEstadoAsync(repository, hubContext, stoppingToken);
-
-                    // Enviar notificaciones del usuario 'system' a todos los usuarios
-                    await SendSystemNotificationsToAllUsersAsync(repository, hubContext, stoppingToken);
                 }
             }
             catch (Exception ex)
@@ -106,7 +103,8 @@ public class NotificationWorkerService : BackgroundService
             if (stoppingToken.IsCancellationRequested)
                 break;
 
-            if (!string.IsNullOrEmpty(notification.Usuario))
+            // Solo enviar si tiene un usuario específico asignado (excluir 'system')
+            if (!string.IsNullOrEmpty(notification.Usuario) && notification.Usuario.ToLower() != "system")
             {
                 var notificationDto = new NotificationDto
                 {
@@ -134,46 +132,6 @@ public class NotificationWorkerService : BackgroundService
                 // Marcar la notificación como enviada para que no se vuelva a enviar
                 await repository.MarkNotificationAsSentAsync(notification.Id);
             }
-        }
-    }
-
-    private async Task SendSystemNotificationsToAllUsersAsync(
-        INotificationRepository repository, 
-        IHubContext<NotificationHubClass> hubContext,
-        CancellationToken stoppingToken)
-    {
-        var systemNotifications = await repository.GetSystemNotificationsAsync();
-
-        foreach (var notification in systemNotifications)
-        {
-            if (stoppingToken.IsCancellationRequested)
-                break;
-
-            var notificationDto = new NotificationDto
-            {
-                Id = notification.Id,
-                ClaveId = notification.ClaveId,
-                SolicitudId = notification.SolicitudId,
-                NombreProceso = notification.NombreProceso,
-                Titulo = notification.Titulo,
-                Mensaje = notification.Mensaje,
-                NotificationTipo = notification.NotificationTipo,
-                IsAcknowledged = notification.IsAcknowledged,
-                RelativeNotifiedDateAndTime = notification.RelativeNotifiedDateAndTime,
-                CreatedOnUtc = notification.CreatedOnUtc,
-                Estado = notification.Estado,
-                Usuario = notification.Usuario,
-                Prioridad = notification.Prioridad
-            };
-
-            // Enviar a todos los clientes conectados
-            await hubContext.Clients.All
-                .SendAsync("ClientReceiveNotification", notificationDto, stoppingToken);
-
-            _logger.LogInformation($"Notificación system {notification.Id} enviada a todos los usuarios");
-
-            // Marcar la notificación como enviada para que no se vuelva a enviar
-            await repository.MarkNotificationAsSentAsync(notification.Id);
         }
     }
 }
