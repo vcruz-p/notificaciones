@@ -22,10 +22,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowVueClient", policy =>
     {
-        policy.SetIsOriginAllowed(_ => true) // Permitir cualquier origen
+        policy.WithOrigins("http://192.168.4.40:8080") // Origen específico del cliente Vue
               .AllowAnyHeader()
-              .AllowAnyMethod();
-              // No usar AllowCredentials() con origen comodín
+              .AllowAnyMethod()
+              .AllowCredentials(); // Permitir credenciales (requerido para SignalR)
     });
 });
 
