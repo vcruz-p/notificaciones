@@ -201,19 +201,19 @@
     ]
   },
   "packageFolders": {
-    "/root/.nuget/packages/": {}
+    "C:\\Users\\Vladimir\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/workspace/NotificationHub/NotificationHub.csproj",
+      "projectUniqueName": "E:\\000-PROYECTOS\\C-CHART\\Notificaciones\\NotificationHub\\NotificationHub.csproj",
       "projectName": "NotificationHub",
-      "projectPath": "/workspace/NotificationHub/NotificationHub.csproj",
-      "packagesPath": "/root/.nuget/packages/",
-      "outputPath": "/workspace/NotificationHub/obj/",
+      "projectPath": "E:\\000-PROYECTOS\\C-CHART\\Notificaciones\\NotificationHub\\NotificationHub.csproj",
+      "packagesPath": "C:\\Users\\Vladimir\\.nuget\\packages\\",
+      "outputPath": "E:\\000-PROYECTOS\\C-CHART\\Notificaciones\\NotificationHub\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/root/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Vladimir\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -269,7 +269,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.401/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
