@@ -17,22 +17,21 @@ builder.Services.AddSignalR().AddHubOptions<NotificationHubClass>(options =>
 // Registrar el worker service para enviar notificaciones pendientes
 builder.Services.AddHostedService<NotificationWorkerService>();
 
-// 1. Agregar servicios
+// Configurar CORS para permitir conexiones desde cualquier origen
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin", policy =>
+    options.AddPolicy("AllowAllOrigins", policy =>
     {
-        policy.WithOrigins("http://192.168.4.40:8080") // Tu origen frontend
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials(); // <--- ESTO ES CRÍTICO: Debe estar presente
+              .AllowAnyMethod();
     });
 });
 
 var app = builder.Build();
 
 // Usar CORS
-app.UseCors("AllowVueClient");
+app.UseCors("AllowAllOrigins");
 
 // Mapear el Hub de SignalR
 app.MapHub<NotificationHubClass>("/notifications");
