@@ -21,49 +21,9 @@ public class NotificationHubClass : Hub
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, $"User_{username}");
             Console.WriteLine($"Usuario {username} conectado con ConnectionId: {Context.ConnectionId}");
-
-            // Enviar solo las notificaciones no atendidas de este usuario específico
-            await SendPendingNotificationsToCallerAsync(username);
         }
         
         await base.OnConnectedAsync();
-    }
-
-    private async Task SendPendingNotificationsToCallerAsync(string username)
-    {
-        try
-        {
-            var pendingNotifications = await _repository.GetPendingNotificationsAsync(username);
-
-            foreach (var notification in pendingNotifications)
-            {
-                var notificationDto = new NotificationDto
-                {
-                    Id = notification.Id,
-                    ClaveId = notification.ClaveId,
-                    SolicitudId = notification.SolicitudId,
-                    NombreProceso = notification.NombreProceso,
-                    Titulo = notification.Titulo,
-                    Mensaje = notification.Mensaje,
-                    NotificationTipo = notification.NotificationTipo,
-                    IsAcknowledged = notification.IsAcknowledged,
-                    RelativeNotifiedDateAndTime = notification.RelativeNotifiedDateAndTime,
-                    CreatedOnUtc = notification.CreatedOnUtc,
-                    Estado = notification.Estado,
-                    Usuario = notification.Usuario,
-                    Prioridad = notification.Prioridad
-                };
-
-                // Enviar solo al cliente que se conectó (Caller)
-                await Clients.Caller.SendAsync("ClientReceiveNotification", notificationDto);
-            }
-
-            Console.WriteLine($"Enviadas {pendingNotifications.Count} notificaciones pendientes al usuario {username}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al enviar notificaciones pendientes al usuario {username}: {ex.Message}");
-        }
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
