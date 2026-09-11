@@ -4,6 +4,12 @@ using NotificationHub.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurar Kestrel para escuchar en todas las interfaces de red (0.0.0.0)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5200); // Escuchar en 0.0.0.0:5200
+});
+
 // Configurar conexión a MySQL - Registrar el repositorio como singleton
 builder.Services.AddSingleton<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
@@ -13,9 +19,6 @@ builder.Services.AddSignalR().AddHubOptions<NotificationHubClass>(options =>
 {
     options.EnableDetailedErrors = true;
 });
-
-// Registrar el worker service para enviar notificaciones pendientes
-builder.Services.AddHostedService<NotificationWorkerService>();
 
 // Configurar CORS para permitir conexiones desde cualquier origen
 builder.Services.AddCors(options =>
