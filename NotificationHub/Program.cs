@@ -17,15 +17,15 @@ builder.Services.AddSignalR().AddHubOptions<NotificationHubClass>(options =>
 // Registrar el worker service para enviar notificaciones pendientes
 builder.Services.AddHostedService<NotificationWorkerService>();
 
-// Configurar CORS para permitir conexiones desde el cliente Vue
+// 1. Agregar servicios
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowVueClient", policy =>
+    options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.SetIsOriginAllowed(_ => true) // Permitir cualquier origen
+        policy.WithOrigins("http://192.168.4.40:8080") // Tu origen frontend
               .AllowAnyHeader()
-              .AllowAnyMethod();
-              // No usar AllowCredentials() con origen comodín
+              .AllowAnyMethod()
+              .AllowCredentials(); // <--- ESTO ES CRÍTICO: Debe estar presente
     });
 });
 
